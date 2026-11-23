@@ -8,3 +8,8 @@ class ProdutoDuplicadoError(LojaDomainError):
 
 class DadosInvalidosError(LojaDomainError):
     """Levantada quando dados violam regras de negócio (ex: preço <= 0)."""
+
+class ProdutoNaoEncontradoError(LojaDomainError):
+    def __init__(self, codigo: int):
+        self.codigo = codigo
+        super().__init__(f"Produto com código {codigo} não encontrado.")
