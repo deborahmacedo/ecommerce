@@ -1,6 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from src.api.routes import router
+from fastapi.responses import JSONResponse
+
+from src.api.routes import router as loja_router
+from src.models.exceptions import DadosInvalidosError, ProdutoDuplicadoError
 
 app = FastAPI(
     title="API E-commerce de Artesanato",
@@ -8,14 +12,40 @@ app = FastAPI(
     version="0.1.0",
 )
 
-app.include_router(router)
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": "Dados de entrada ausentes ou com tipo inválido."},
+    )
+
+
+@app.exception_handler(DadosInvalidosError)
+async def dados_invalidos_handler(request: Request, exc: DadosInvalidosError) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": str(exc)},
+    )
+
+
+@app.exception_handler(ProdutoDuplicadoError)
+async def produto_duplicado_handler(request: Request, exc: ProdutoDuplicadoError) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_409_CONFLICT,
+        content={"detail": str(exc)},
+    )
+
+
+app.include_router(loja_router)
+
 
 @app.get("/health")
 def health_check() -> dict[str, str]:
