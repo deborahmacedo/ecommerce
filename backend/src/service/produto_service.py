@@ -1,4 +1,4 @@
-from src.models.exceptions import DadosInvalidosError, ProdutoDuplicadoError
+from src.models.exceptions import DadosInvalidosError, ProdutoDuplicadoError, ProdutoNaoEncontradoError
 from src.models.produto import Produto
 from src.repository.produto_repository import ProdutoRepository
 
@@ -20,3 +20,13 @@ class ProdutoService:
         novo_produto = Produto(codigo=codigo, preco=round(float(preco), 2), estoque=0)
         self.repository.adicionar(novo_produto)
         return novo_produto.to_dict()
+
+    def consultar_estoque(self, codigo: int) -> dict[str, int]:
+        if isinstance(codigo, bool) or not isinstance(codigo, int):
+            raise DadosInvalidosError("O código do produto deve ser um número inteiro.")
+
+        produto = self.repository.buscar_por_codigo(codigo)
+        if produto is None:
+            raise ProdutoNaoEncontradoError(codigo)
+
+        return {"codigo": produto.codigo, "estoque": produto.estoque}
