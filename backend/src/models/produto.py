@@ -35,6 +35,7 @@ class MovimentacaoEstoqueRequest(BaseModel):
     quantidade: StrictInt
 
 
+EntradaEstoqueRequest = MovimentacaoEstoqueRequest
 SaidaEstoqueRequest = MovimentacaoEstoqueRequest
 
 

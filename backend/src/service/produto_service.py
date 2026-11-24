@@ -26,6 +26,21 @@ class ProdutoService:
         self.repository.adicionar(novo_produto)
         return novo_produto.to_dict()
 
+    def entrada_estoque(self, codigo: int, quantidade: int) -> dict:
+        if isinstance(codigo, bool) or not isinstance(codigo, int) or codigo <= 0:
+            raise DadosInvalidosError("O código do produto deve ser um inteiro positivo.")
+
+        if isinstance(quantidade, bool) or not isinstance(quantidade, int) or quantidade <= 0:
+            raise DadosInvalidosError("A quantidade de entrada deve ser um número inteiro maior que zero.")
+
+        produto = self.repository.buscar_por_codigo(codigo)
+        if produto is None:
+            raise ProdutoNaoEncontradoError(codigo)
+
+        produto.estoque += quantidade
+        self.repository.atualizar(produto)
+        return {"codigo": produto.codigo, "estoque": produto.estoque}
+
     def consultar_estoque(self, codigo: int) -> dict[str, int]:
         if isinstance(codigo, bool) or not isinstance(codigo, int):
             raise DadosInvalidosError("O código do produto deve ser um número inteiro.")
