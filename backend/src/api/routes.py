@@ -3,7 +3,12 @@ from pydantic import BaseModel
 
 from src.models.venda import VendaCreateRequest, VendaResponse
 from src.models.exceptions import DadosInvalidosError, ProdutoNaoEncontradoError
-from src.models.produto import EstoqueResponse, ProdutoCreateRequest, ProdutoResponse
+from src.models.produto import (
+    EstoqueResponse,
+    MovimentacaoEstoqueRequest,
+    ProdutoCreateRequest,
+    ProdutoResponse,
+)
 from src.service.produto_service import ProdutoService
 from src.service.venda_service import VendaService
 
@@ -23,6 +28,16 @@ def cadastrar_produto(payload: ProdutoCreateRequest) -> dict:
 )
 def consultar_estoque(codigo: int):
     return service.consultar_estoque(codigo)
+
+
+@router.put(
+    "/produto/{codigo}/saida",
+    response_model=EstoqueResponse,
+    status_code=status.HTTP_200_OK,
+)
+def saida_estoque(codigo: int, payload: MovimentacaoEstoqueRequest) -> dict:
+    return service.saida_estoque(codigo=codigo, quantidade=payload.quantidade)
+
 
 @router.post("/venda", response_model=VendaResponse, status_code=status.HTTP_201_CREATED)
 def realizar_venda(payload: VendaCreateRequest) -> dict:
