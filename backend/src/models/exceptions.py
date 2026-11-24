@@ -13,3 +13,6 @@ class ProdutoNaoEncontradoError(LojaDomainError):
     def __init__(self, codigo: int):
         self.codigo = codigo
         super().__init__(f"Produto com código {codigo} não encontrado.")
+
+class EstoqueInsuficienteError(LojaDomainError):
+    """Levantada quando a quantidade solicitada excede o estoque disponível."""
