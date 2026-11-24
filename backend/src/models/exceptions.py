@@ -11,4 +11,11 @@ class DadosInvalidosError(LojaDomainError):
 
 
 class ProdutoNaoEncontradoError(LojaDomainError):
-    """Levantada quando um produto pesquisado não é encontrado."""
+    def __init__(self, codigo: int | str):
+        self.codigo = codigo
+        msg = f"Produto com código {codigo} não encontrado." if isinstance(codigo, int) else str(codigo)
+        super().__init__(msg)
+
+
+class EstoqueInsuficienteError(LojaDomainError):
+    """Levantada quando a quantidade solicitada excede o estoque disponível."""

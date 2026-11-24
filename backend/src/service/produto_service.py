@@ -34,8 +34,18 @@ class ProdutoService:
 
         produto = self.repository.buscar_por_codigo(codigo)
         if produto is None:
-            raise ProdutoNaoEncontradoError(f"Produto com código {codigo} não encontrado.")
+            raise ProdutoNaoEncontradoError(codigo)
 
         produto.estoque += quantidade
         self.repository.atualizar(produto)
+        return {"codigo": produto.codigo, "estoque": produto.estoque}
+
+    def consultar_estoque(self, codigo: int) -> dict[str, int]:
+        if isinstance(codigo, bool) or not isinstance(codigo, int):
+            raise DadosInvalidosError("O código do produto deve ser um número inteiro.")
+
+        produto = self.repository.buscar_por_codigo(codigo)
+        if produto is None:
+            raise ProdutoNaoEncontradoError(codigo)
+
         return {"codigo": produto.codigo, "estoque": produto.estoque}

@@ -60,3 +60,6 @@ class ProdutoRepository:
                 atualizados.append(p)
         self._escrever_atomico([p.to_dict() for p in atualizados])
         return produto
+
+    def salvar_todos(self, produtos: list[Produto]) -> None:
+        self._escrever_atomico([p.to_dict() for p in produtos])
