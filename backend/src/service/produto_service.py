@@ -1,5 +1,6 @@
 from src.models.exceptions import (
     DadosInvalidosError,
+    EstoqueInsuficienteError,
     ProdutoDuplicadoError,
     ProdutoNaoEncontradoError,
 )
@@ -48,4 +49,24 @@ class ProdutoService:
         if produto is None:
             raise ProdutoNaoEncontradoError(codigo)
 
+        return {"codigo": produto.codigo, "estoque": produto.estoque}
+
+    def saida_estoque(self, codigo: int, quantidade: int) -> dict:
+        if isinstance(codigo, bool) or not isinstance(codigo, int) or codigo <= 0:
+            raise DadosInvalidosError("O código do produto deve ser um inteiro positivo.")
+
+        if isinstance(quantidade, bool) or not isinstance(quantidade, int) or quantidade <= 0:
+            raise DadosInvalidosError("A quantidade de saída deve ser um número inteiro maior que zero.")
+
+        produto = self.repository.buscar_por_codigo(codigo)
+        if produto is None:
+            raise ProdutoNaoEncontradoError(codigo)
+
+        if quantidade > produto.estoque:
+            raise EstoqueInsuficienteError(
+                f"Estoque insuficiente para o produto {codigo}. Disponível: {produto.estoque}."
+            )
+
+        produto.estoque -= quantidade
+        self.repository.atualizar(produto)
         return {"codigo": produto.codigo, "estoque": produto.estoque}

@@ -36,6 +36,7 @@ class MovimentacaoEstoqueRequest(BaseModel):
 
 
 EntradaEstoqueRequest = MovimentacaoEstoqueRequest
+SaidaEstoqueRequest = MovimentacaoEstoqueRequest
 
 
 class EstoqueResponse(BaseModel):

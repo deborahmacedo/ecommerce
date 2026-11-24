@@ -35,6 +35,15 @@ def entrada_estoque(codigo: int, payload: MovimentacaoEstoqueRequest) -> dict:
     return service.entrada_estoque(codigo=codigo, quantidade=payload.quantidade)
 
 
+@router.put(
+    "/produto/{codigo}/saida",
+    response_model=EstoqueResponse,
+    status_code=status.HTTP_200_OK,
+)
+def saida_estoque(codigo: int, payload: MovimentacaoEstoqueRequest) -> dict:
+    return service.saida_estoque(codigo=codigo, quantidade=payload.quantidade)
+
+
 @router.post("/venda", response_model=VendaResponse, status_code=status.HTTP_201_CREATED)
 def realizar_venda(payload: VendaCreateRequest) -> dict:
     itens_dict = [item.model_dump() for item in payload.itens]
