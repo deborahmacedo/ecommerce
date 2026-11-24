@@ -50,5 +50,16 @@ class ProdutoRepository:
         self._escrever_atomico([p.to_dict() for p in produtos])
         return produto
 
+    def atualizar(self, produto: Produto) -> Produto:
+        produtos = self.listar_todos()
+        atualizados = []
+        for p in produtos:
+            if p.codigo == produto.codigo:
+                atualizados.append(produto)
+            else:
+                atualizados.append(p)
+        self._escrever_atomico([p.to_dict() for p in atualizados])
+        return produto
+
     def salvar_todos(self, produtos: list[Produto]) -> None:
         self._escrever_atomico([p.to_dict() for p in produtos])

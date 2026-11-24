@@ -31,6 +31,13 @@ class ProdutoResponse(BaseModel):
     estoque: int
 
 
+class MovimentacaoEstoqueRequest(BaseModel):
+    quantidade: StrictInt
+
+
+EntradaEstoqueRequest = MovimentacaoEstoqueRequest
+
+
 class EstoqueResponse(BaseModel):
     codigo: int
     estoque: int
