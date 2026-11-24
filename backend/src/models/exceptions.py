@@ -8,3 +8,7 @@ class ProdutoDuplicadoError(LojaDomainError):
 
 class DadosInvalidosError(LojaDomainError):
     """Levantada quando dados violam regras de negócio (ex: preço <= 0)."""
+
+
+class ProdutoNaoEncontradoError(LojaDomainError):
+    """Levantada quando um produto pesquisado não é encontrado."""
