@@ -42,8 +42,8 @@ class ProdutoService:
         return {"codigo": produto.codigo, "estoque": produto.estoque}
 
     def consultar_estoque(self, codigo: int) -> dict[str, int]:
-        if isinstance(codigo, bool) or not isinstance(codigo, int):
-            raise DadosInvalidosError("O código do produto deve ser um número inteiro.")
+        if isinstance(codigo, bool) or not isinstance(codigo, int) or codigo <= 0:
+            raise DadosInvalidosError("O código do produto deve ser um um inteiro positivo.")
 
         produto = self.repository.buscar_por_codigo(codigo)
         if produto is None:
