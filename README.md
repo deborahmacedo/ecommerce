@@ -1,15 +1,26 @@
-# E-commerce de Artesanato - API de Controle de Produtos e Estoque (DIM0517)
+# E-commerce de Artesanato - Controle de Produtos e Estoque (DIM0517)
 
-API RESTful desenvolvida com **FastAPI** para controle de catálogo e estoque de uma loja de artesanato. O projeto adota uma arquitetura em camadas (Clean/Layered Architecture), separando regras de negócio, persistência e exposição de endpoints.
+Sistema de e-commerce básico para controle de produtos e estoque, desenvolvido para a **Tarefa 01** da disciplina **DIM0517 - Gerência de Configuração e Mudanças**.
+
+O projeto segue estritamente a arquitetura em três camadas especificada no documento da atividade:
+1. **Camada de Serviço (Negócio):** Regras de negócio puras e independentes de framework (`backend/src/service/`).
+2. **API REST (Backend):** Implementação FastAPI em conformidade com o padrão exigido (`backend/src/api/`).
+3. **Front-end (Web):** Aplicação React + Vite + TypeScript que consome a API REST e disponibiliza interface visual para as 5 operações (`frontend/`).
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
+### Backend
 - **[Python 3.11+](https://www.python.org/)**
-- **[FastAPI](https://fastapi.tiangolo.com/)**: Framework web assíncrono e de alta performance.
-- **[Pydantic v2](https://docs.pydantic.dev/)**: Validação e parsing de dados com tipagem estrita.
-- **[Uvicorn](https://www.uvicorn.org/)**: Servidor ASGI rápido.
+- **[FastAPI](https://fastapi.tiangolo.com/)**: Framework REST assíncrono.
+- **[Pydantic v2](https://docs.pydantic.dev/)**: Validação de dados com tipagem estrita.
+- **[Uvicorn](https://www.uvicorn.org/)**: Servidor ASGI.
+
+### Frontend
+- **[React 19](https://react.dev/)** & **[TypeScript](https://www.typescriptlang.org/)**
+- **[Vite](https://vitejs.dev/)**: Bundler e servidor de desenvolvimento ágil com proxy reverso.
+- **[Tailwind CSS v4](https://tailwindcss.com/)**: Estilização moderna e responsiva.
 
 ---
 
@@ -18,21 +29,36 @@ API RESTful desenvolvida com **FastAPI** para controle de catálogo e estoque de
 ```text
 ecommerce/
 ├── backend/
-│   ├── data/                 # Arquivos de persistência local (JSON)
-│   │   └── produtos.json     # Base de dados em formato JSON
+│   ├── data/
+│   │   └── produtos.json         # Base de persistência local em formato JSON
 │   ├── src/
-│   │   ├── api/              # Camada de apresentação (FastAPI)
-│   │   │   ├── main.py       # Inicialização da aplicação, CORS e exception handlers
-│   │   │   └── routes.py     # Definição das rotas REST (/loja)
-│   │   ├── models/           # Entidades de domínio e schemas Pydantic
-│   │   │   ├── exceptions.py # Exceções de domínio personalizadas
-│   │   │   └── produto.py    # Dataclasses e schemas de Request/Response
-│   │   ├── repository/       # Camada de persistência de dados
-│   │   │   └── produto_repository.py # Operações atômicas de leitura e escrita
-│   │   └── service/          # Camada de regras de negócio
-│   │       └── produto_service.py    # Validações lógicas e orquestração
-│   └── requirements.txt      # Dependências do backend
-├── frontend/                 # Interface do usuário (em desenvolvimento)
+│   │   ├── api/                  # Camada de apresentação REST
+│   │   │   ├── exception_handlers.py # Mapeamento de erros (400, 404, 409)
+│   │   │   ├── main.py           # Aplicação FastAPI, CORS e inicialização
+│   │   │   └── routes.py         # 5 rotas da loja (/loja) + /health
+│   │   ├── models/               # Entidades de domínio e schemas Pydantic
+│   │   │   ├── exceptions.py     # Exceções de domínio (LojaDomainError)
+│   │   │   ├── produto.py        # Modelos Produto, Requisições e Respostas
+│   │   │   └── venda.py          # Modelos Venda e Itens de Venda
+│   │   ├── repository/           # Camada de persistência atômica
+│   │   │   └── produto_repository.py
+│   │   └── service/              # Camada de regras de negócio
+│   │       ├── produto_service.py # Cadastro, consulta, entrada e saída
+│   │       └── venda_service.py   # Validação e baixa atômica de venda
+│   └── requirements.txt          # Dependências Python
+├── frontend/
+│   ├── src/
+│   │   ├── app/                  # Composição principal (App.tsx) e estilos
+│   │   ├── entities/             # Entidades da vitrine
+│   │   ├── pages/
+│   │   │   └── admin/            # Painel de Gestão (As 5 Operações da API)
+│   │   └── shared/
+│   │       └── api/              # Cliente HTTP tipado (storeApi.ts)
+│   ├── package.json              # Dependências Node.js
+│   ├── tsconfig.json             # Configuração TypeScript
+│   └── vite.config.ts            # Configuração Vite com proxy para o backend
+├── openapi.json                  # Especificação OpenAPI da API
+├── EspecificacaoProjeto_-_Tarefa_01 (1).pdf # Especificação oficial da disciplina
 └── README.md
 ```
 
@@ -40,144 +66,120 @@ ecommerce/
 
 ## 🚀 Como Executar o Projeto
 
-### 1. Pré-requisitos
-Certifique-se de ter o Python 3.11 ou superior instalado em sua máquina.
+### 1. Backend (FastAPI)
 
-### 2. Instalação das dependências
-Na raiz do projeto, instale as dependências:
-```bash
-pip install -r backend/requirements.txt
-```
-
-*(Opcional recomendado)* Caso utilize um ambiente virtual:
-```bash
-python -m venv .venv
-# No Windows (PowerShell):
-.venv\Scripts\Activate.ps1
-# No Linux/Mac:
-source .venv/bin/activate
-
-pip install -r backend/requirements.txt
-```
-
-### 3. Inicializar o servidor da API
-A partir da raiz do projeto, execute:
-```bash
-uvicorn src.api.main:app --app-dir backend --reload
-```
-Ou, se preferir entrar na pasta `backend`:
-```bash
-cd backend
-uvicorn src.api.main:app --reload
-```
-
-A API estará disponível em: **`http://127.0.0.1:8000`**
+1. Certifique-se de ter o **Python 3.11+** instalado.
+2. Na raiz do projeto, instale as dependências:
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
+3. Inicie o servidor da API:
+   ```bash
+   uvicorn src.api.main:app --app-dir backend --reload
+   ```
+   A API estará rodando em: **`http://127.0.0.1:8000`**
+   Documentação interativa Swagger: **`http://127.0.0.1:8000/docs`**
 
 ---
 
-## 🧪 Como Testar a API (Sem Frontend)
+### 2. Frontend (React + Vite)
 
-Como a aplicação ainda não possui frontend, você pode testar todas as funcionalidades de forma 100% visual e prática através do **Swagger UI nativo do FastAPI**:
+1. Certifique-se de ter o **Node.js (v18+)** e **npm** instalados.
+2. Acesse a pasta `frontend` e instale as dependências:
+   ```bash
+   cd frontend
+   npm install
+   ```
+3. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+4. Abra no navegador:
+   👉 **`http://localhost:5173`**
 
-1. Inicie o servidor da API.
-2. Abra o seu navegador e acesse:
-   👉 **`http://127.0.0.1:8000/docs`**
-3. Você verá todos os endpoints disponíveis organizados. Para testar qualquer um:
-   * Clique sobre a rota desejada (ex: `POST /loja/produto` ou `PUT /loja/produto/{codigo}/entrada`).
-   * Clique no botão **"Try it out"** no canto direito.
-   * Preencha os campos ou o JSON no corpo da requisição.
-   * Clique em **"Execute"**.
-   * Veja o código de status retornado e o JSON de resposta logo abaixo.
-
-*(Opcional)* Você também pode acessar a documentação alternativa via ReDoc em: `http://127.0.0.1:8000/redoc`.
-
----
-
-## 📌 Endpoints Disponíveis
-
-### 1. Verificação de Saúde
-* **Rota:** `GET /health`
-* **Status de Sucesso:** `200 OK`
-* **Exemplo de Resposta:**
-  ```json
-  {
-    "status": "ok"
-  }
-  ```
+No frontend, clique no menu **"Gestão (API)"** ou no botão **"Painel da API"** no cabeçalho para acessar a interface direta de teste de todas as 5 operações da Tarefa 01.
 
 ---
 
-### 2. Cadastrar Produto
-Cadastra um novo produto no catálogo com saldo inicial de estoque zerado.
+## 📌 As 5 Operações do Sistema (Conforme Especificação)
 
-* **Rota:** `POST /loja/produto`
-* **Status de Sucesso:** `201 Created`
-* **Corpo da Requisição (Request Body):**
-  ```json
-  {
-    "codigo": 101,
-    "preco": 45.90
-  }
-  ```
-* **Resposta de Sucesso:**
-  ```json
-  {
-    "codigo": 101,
-    "preco": 45.90,
-    "estoque": 0
-  }
-  ```
-* **Respostas de Erro:**
-  * `400 Bad Request`: Código não é inteiro positivo, preço menor ou igual a zero, ou tipos inválidos.
-  * `409 Conflict`: Já existe um produto cadastrado com o código informado.
+Todas as 5 operações solicitadas no documento do projeto estão implementadas no backend e integradas visualmente na aba **Gestão** do Frontend:
 
----
+### 1. Cadastrar Produto
+- **Rota:** `POST /loja/produto`
+- **Requisição:** `{"codigo": 123, "preco": 59.90}`
+- **Resposta Sucesso (201 Created):** `{"codigo": 123, "preco": 59.90, "estoque": 0}`
+- **Erros:**
+  - `409 Conflict`: Se já existir produto com o código informado.
+  - `400 Bad Request`: Se código não for inteiro positivo ou preço <= 0.
+
+### 2. Consultar Estoque
+- **Rota:** `GET /loja/produto/{codigo}/estoque`
+- **Requisição:** Sem corpo.
+- **Resposta Sucesso (200 OK):** `{"codigo": 123, "estoque": 15}`
+- **Erros:**
+  - `404 Not Found`: Produto informado não existe.
+  - `400 Bad Request`: Código inválido.
 
 ### 3. Entrada de Estoque (Reposição)
-Incrementa o saldo de estoque de um produto existente.
+- **Rota:** `PUT /loja/produto/{codigo}/entrada`
+- **Requisição:** `{"quantidade": 10}`
+- **Resposta Sucesso (200 OK):** `{"codigo": 123, "estoque": 25}`
+- **Erros:**
+  - `404 Not Found`: Produto informado não existe.
+  - `400 Bad Request`: Quantidade não inteira ou <= 0.
 
-* **Rota:** `PUT /loja/produto/{codigo}/entrada`
-* **Parâmetro de Rota (Path Param):** `codigo` (ex: `101`)
-* **Status de Sucesso:** `200 OK`
-* **Corpo da Requisição (Request Body):**
+### 4. Saída de Estoque (Baixa)
+- **Rota:** `PUT /loja/produto/{codigo}/saida`
+- **Requisição:** `{"quantidade": 10}`
+- **Resposta Sucesso (200 OK):** `{"codigo": 123, "estoque": 5}`
+- **Erros:**
+  - `404 Not Found`: Produto informado não existe.
+  - `400 Bad Request`: Quantidade excede o saldo em estoque ou é <= 0.
+
+### 5. Venda (Atômica Multi-Item)
+- **Rota:** `POST /loja/venda`
+- **Requisição:**
   ```json
   {
-    "quantidade": 15
+    "itens": [
+      {"codigo": 123, "quantidade": 2},
+      {"codigo": 456, "quantidade": 1}
+    ]
   }
   ```
-* **Resposta de Sucesso:**
+- **Resposta Sucesso (201 Created):**
   ```json
   {
-    "codigo": 101,
-    "estoque": 15
+    "total": 189.70,
+    "itens": [
+      {"codigo": 123, "quantidade": 2, "subtotal": 119.80, "estoque": 13},
+      {"codigo": 456, "quantidade": 1, "subtotal": 69.90, "estoque": 7}
+    ]
   }
   ```
-* **Respostas de Erro:**
-  * `400 Bad Request`: Quantidade menor ou igual a zero, tipos incompatíveis (rejeita strings como `"10"` e números decimais como `2.5`).
-  * `404 Not Found`: Produto com o código informado não existe.
+- **Erros:**
+  - `404 Not Found`: Algum produto da lista não existe.
+  - `400 Bad Request`: Lista vazia, campo inválido ou estoque insuficiente (nenhum produto sofre alteração se houver erro).
 
 ---
 
-## 💻 Exemplos de Teste via Terminal
+## 🧪 Como Testar via Terminal (Exemplos)
 
-### Usando o PowerShell:
-
-**1. Cadastrar um produto:**
+### Teste completo de fluxo (PowerShell):
 ```powershell
-Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:8000/loja/produto" -Headers @{"Content-Type"="application/json"} -Body '{"codigo": 10, "preco": 35.0}'
-```
+# 1. Cadastrar produto 200 com preço 30.00
+Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:8000/loja/produto" -Headers @{"Content-Type"="application/json"} -Body '{"codigo": 200, "preco": 30.0}'
 
-**2. Adicionar estoque ao produto cadastrado:**
-```powershell
-Invoke-RestMethod -Method Put -Uri "http://127.0.0.1:8000/loja/produto/10/entrada" -Headers @{"Content-Type"="application/json"} -Body '{"quantidade": 20}'
-```
+# 2. Consultar estoque inicial (deve ser 0)
+Invoke-RestMethod -Method Get -Uri "http://127.0.0.1:8000/loja/produto/200/estoque"
 
-### Usando cURL:
+# 3. Adicionar 50 unidades ao estoque
+Invoke-RestMethod -Method Put -Uri "http://127.0.0.1:8000/loja/produto/200/entrada" -Headers @{"Content-Type"="application/json"} -Body '{"quantidade": 50}'
 
-```bash
-# Cadastro
-curl -X POST "http://127.0.0.1:8000/loja/produto" -H "Content-Type: application/json" -d '{"codigo": 10, "preco": 35.0}'
+# 4. Dar baixa de 5 unidades por avaria
+Invoke-RestMethod -Method Put -Uri "http://127.0.0.1:8000/loja/produto/200/saida" -Headers @{"Content-Type"="application/json"} -Body '{"quantidade": 5}'
 
-# Entrada de Estoque
-curl -X PUT "http://127.0.0.1:8000/loja/produto/10/entrada" -H "Content-Type: application/json" -d '{"quantidade": 20}'
+# 5. Realizar venda de 10 unidades
+Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:8000/loja/venda" -Headers @{"Content-Type"="application/json"} -Body '{"itens": [{"codigo": 200, "quantidade": 10}]}'
 ```
