@@ -16,6 +16,7 @@ O projeto segue estritamente a arquitetura em três camadas especificada no docu
 - **[FastAPI](https://fastapi.tiangolo.com/)**: Framework REST assíncrono.
 - **[Pydantic v2](https://docs.pydantic.dev/)**: Validação de dados com tipagem estrita.
 - **[Uvicorn](https://www.uvicorn.org/)**: Servidor ASGI.
+- **[Pytest](https://docs.pytest.org/)**: Framework de testes unitários da camada de serviço.
 
 ### Frontend
 - **[React 19](https://react.dev/)** & **[TypeScript](https://www.typescriptlang.org/)**
@@ -45,6 +46,10 @@ ecommerce/
 │   │   └── service/              # Camada de regras de negócio
 │   │       ├── produto_service.py # Cadastro, consulta, entrada e saída
 │   │       └── venda_service.py   # Validação e baixa atômica de venda
+│   ├── tests/                    # Testes unitários da camada de serviço (Pytest)
+│   │   ├── conftest.py           # Fixtures isoladas com repositório temporário
+│   │   ├── test_produto_service.py # Testes de cadastro, consulta, entrada e saída
+│   │   └── test_venda_service.py   # Testes de venda atômica
 │   └── requirements.txt          # Dependências Python
 ├── frontend/
 │   ├── src/
@@ -60,8 +65,6 @@ ecommerce/
 ├── openapi.json                  # Especificação OpenAPI da API
 ├── EspecificacaoProjeto_-_Tarefa_01 (1).pdf # Especificação oficial da disciplina
 └── README.md
-```
-
 ---
 
 ## 🚀 Como Executar o Projeto
